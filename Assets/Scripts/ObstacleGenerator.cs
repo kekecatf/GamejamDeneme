@@ -23,7 +23,6 @@ public class ObstacleGenerator : MonoBehaviour
     public float minSpawnIntervalLimit = 1f;        // Minimum oluşturma aralığı limiti
     
     private List<GameObject> obstacles = new List<GameObject>();
-    private float timer = 0f;
     private float difficultyTimer = 0f;
     private bool isGenerating = false;
     private Coroutine generationCoroutine;

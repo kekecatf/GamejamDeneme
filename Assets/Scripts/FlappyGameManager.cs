@@ -17,6 +17,12 @@ public class FlappyGameManager : MonoBehaviour
     public FlappyPlayerController player; // Oyuncu referansı
     public ObstacleGenerator obstacleGenerator; // Engel üretici referansı
     
+    [Header("Audio Settings")]
+    public AudioClip gameStartSound;    // Oyun başlangıç sesi
+    [Range(0f, 1f)]
+    public float startSoundVolume = 0.7f;  // Ses seviyesi
+    private AudioSource audioSource;
+    
     [Header("Debug")]
     public bool showDebugInfo = true;   // Debug bilgisi göster/gizle
     
@@ -41,6 +47,14 @@ public class FlappyGameManager : MonoBehaviour
         
         // Butonlara event listener'ları ekle
         SetupButtons();
+        
+        // AudioSource bileşeni al veya oluştur
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+        }
         
         // Oyunu gecikme ile başlat
         Invoke("StartGame", initialDelay);
@@ -74,11 +88,13 @@ public class FlappyGameManager : MonoBehaviour
         }
     }
     
-    void StartGame()
+    // Oyunu başlat
+    private void StartGame()
     {
-        hasGameStarted = true;
+        // Oyun başlangıç sesini çal
+        PlayGameStartSound();
         
-        // Engel üreticisini başlat
+        // Engel üretmeyi başlat
         if (obstacleGenerator != null)
         {
             obstacleGenerator.StartGenerating();
@@ -88,7 +104,17 @@ public class FlappyGameManager : MonoBehaviour
             Debug.LogError("ObstacleGenerator atanmamış! Lütfen Inspector'da ayarlayın.");
         }
         
-        Debug.Log("Oyun başladı!");
+        hasGameStarted = true;
+    }
+    
+    // Başlangıç sesini çal
+    public void PlayGameStartSound()
+    {
+        if (gameStartSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(gameStartSound, startSoundVolume);
+            Debug.Log("Oyun başlangıç sesi çalınıyor: " + gameStartSound.name);
+        }
     }
     
     void Update()

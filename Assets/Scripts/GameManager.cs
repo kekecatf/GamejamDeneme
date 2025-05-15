@@ -17,6 +17,12 @@ public class GameManager : MonoBehaviour
     public string sceneToLoad = "DenemeSahnesi"; // Yüklenecek sahne adı
     public int sceneIndexToLoad = 0;             // Yüklenecek sahne index
     
+    [Header("Audio Settings")]
+    public AudioClip gameStartSound;    // Oyun başlangıç sesi
+    [Range(0f, 1f)]
+    public float startSoundVolume = 0.7f;  // Ses seviyesi
+    private AudioSource audioSource;
+    
     void Start()
     {
         // Oyunu başlat
@@ -39,6 +45,17 @@ public class GameManager : MonoBehaviour
             string sceneName = System.IO.Path.GetFileNameWithoutExtension(scenePath);
             Debug.Log("Sahne " + i + ": " + sceneName);
         }
+        
+        // AudioSource bileşeni al veya oluştur
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+        }
+        
+        // Oyun başlangıç sesini çal
+        PlayGameStartSound();
     }
     
     void Update()
@@ -57,6 +74,16 @@ public class GameManager : MonoBehaviour
             
             // UI'ı güncelle
             UpdateTimeUI();
+        }
+    }
+    
+    // Başlangıç sesini çal
+    public void PlayGameStartSound()
+    {
+        if (gameStartSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(gameStartSound, startSoundVolume);
+            Debug.Log("Oyun başlangıç sesi çalınıyor: " + gameStartSound.name);
         }
     }
     

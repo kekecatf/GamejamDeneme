@@ -27,6 +27,13 @@ public class PlayerPowerUpManager : MonoBehaviour
     public Color glikozEffectColor = new Color(0f, 1f, 0f, 0.7f);   // Glikoz efekt rengi
     public Color norotransmitterEffectColor = new Color(0f, 0f, 1f, 0.7f); // Nörotransmitter efekt rengi
     
+    [Header("Audio Effects")]
+    public AudioClip speedBoostSound;         // Alyuvar toplama sesi
+    public AudioClip extraTimeSound;          // Glikoz toplama sesi
+    public AudioClip ghostModeSound;          // Nörotransmitter toplama sesi
+    [Range(0f, 1f)]
+    public float soundVolume = 0.7f;          // Ses efekti volume değeri
+    
     [Header("Movement")]
     public float speed = 5f;
     public Joystick joystick;
@@ -35,6 +42,7 @@ public class PlayerPowerUpManager : MonoBehaviour
     private GameManager gameManager;
     private SkillManager skillManager;
     private Rigidbody2D rb;                  // Hareket için Rigidbody2D
+    private AudioSource audioSource;         // Ses kaynağı
     
     // Engellerden geçebilme özelliği için
     private string originalTag;               // Orijinal tag
@@ -145,6 +153,14 @@ public class PlayerPowerUpManager : MonoBehaviour
         gameManager = FindFirstObjectByType<GameManager>();
         skillManager = GetComponent<SkillManager>();
         
+        // AudioSource bileşeni al veya oluştur
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+        }
+        
         // Sprite renderer ve collider referansını al
         spriteRenderer = GetComponent<SpriteRenderer>();
         playerCollider = GetComponent<Collider2D>();
@@ -163,7 +179,7 @@ public class PlayerPowerUpManager : MonoBehaviour
         // Joystick kontrolü
         if (joystick == null)
         {
-            joystick = FindObjectOfType<Joystick>();
+            joystick = FindFirstObjectByType<Joystick>();
             if (joystick == null)
             {
                 Debug.LogError("Joystick bulunamadı! Hareket etmek mümkün olmayacak.");
@@ -255,6 +271,9 @@ public class PlayerPowerUpManager : MonoBehaviour
     // Hız artışı uygula
     public void ApplySpeedBoost()
     {
+        // Ses efekti çal
+        PlaySound(speedBoostSound);
+        
         // Toplama efekti göster
         PlayPickupEffect(alyuvarEffectColor);
         
@@ -289,6 +308,9 @@ public class PlayerPowerUpManager : MonoBehaviour
     // Ek süre ekle
     public void AddExtraTime()
     {
+        // Ses efekti çal
+        PlaySound(extraTimeSound);
+        
         // Toplama efekti göster
         PlayPickupEffect(glikozEffectColor);
         
@@ -304,6 +326,9 @@ public class PlayerPowerUpManager : MonoBehaviour
     // Engellerden geçebilme özelliği ekle
     public void ActivateGhostMode()
     {
+        // Ses efekti çal
+        PlaySound(ghostModeSound);
+        
         // Toplama efekti göster
         PlayPickupEffect(norotransmitterEffectColor);
         
@@ -518,5 +543,15 @@ public class PlayerPowerUpManager : MonoBehaviour
     public bool IsInGhostMode()
     {
         return isGhostMode;
+    }
+    
+    // Ses efekti çalma fonksiyonu
+    private void PlaySound(AudioClip clip)
+    {
+        if (clip != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(clip, soundVolume);
+            Debug.Log("Buff ses efekti çalındı: " + clip.name);
+        }
     }
 } 

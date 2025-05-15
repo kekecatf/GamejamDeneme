@@ -28,7 +28,7 @@ public class FlappyPlayerController : MonoBehaviour
         // Bileşenleri al
         rb = GetComponent<Rigidbody2D>();
         audioSource = GetComponent<AudioSource>();
-        gameManager = FindObjectOfType<FlappyGameManager>();
+        gameManager = FindFirstObjectByType<FlappyGameManager>();
         
         // Bileşenler yoksa ekle
         if (rb == null)
